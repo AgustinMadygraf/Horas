@@ -1,4 +1,4 @@
-Objetivo: Analizar un proyecto de IA para identificar áreas específicas para aplicar mejores prácticas de programación.
+Objetivo: Analizar un proyecto para identificar áreas específicas para aplicar mejores prácticas de programación.
 
 Pasos:
 
