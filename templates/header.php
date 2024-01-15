@@ -15,6 +15,3 @@ echo "<li><a href='centro_costo.php'>Centro de Costos</a></li>";
 echo "<li><a href='/phpMyAdmin/' target='_blank'>Visit the AppServ Open Project</a></li>";
 echo "</ul></div></header>"
 ?>
-
-
-       
