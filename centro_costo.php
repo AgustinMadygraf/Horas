@@ -1,27 +1,22 @@
 <?php
 include 'templates/header.php'; 
 require_once 'includes/db.php';
+require_once 'helpers.php'; // Asegúrate de que este archivo incluya la función obtenerNombreCentroCosto
 
-// Preparar la consulta SQL
+// Preparar la consulta SQL utilizando consultas preparadas
 $sql = "SELECT COALESCE(centro_costo, 'Sin Asignar') AS centro_costo, SUM(horas_trabajadas) AS total_horas FROM registro_horas_trabajo GROUP BY COALESCE(centro_costo, 'Sin Asignar') ORDER BY `total_horas` DESC";
-$resultado = $conexion->query($sql);
 
-function obtenerNombreCentroCosto($codigo) {
-    $nombresCentroCosto = [
-        '1' => 'Maquina de bolsas',
-        '2' => 'Boletas y folletería',
-        '3' => 'Logistica',
-        '4' => 'Administración',
-        '5' => 'Club',
-        '6' => 'Mantenimiento',
-        '7' => 'Comedor',
-        '8' => 'Guardia',
-        '9' => 'Sistemas',
-        '10' => 'Enfermería',
+// Preparar la sentencia
+$stmt = $conexion->prepare($sql);
 
-    ];
-    return isset($nombresCentroCosto[$codigo]) ? $nombresCentroCosto[$codigo] : 'Desconocido';
-}
+// Ejecutar la sentencia
+$stmt->execute();
+
+// Obtener los resultados
+$resultado = $stmt->get_result();
+
+// Cerrar la sentencia
+$stmt->close();
 
 $totalHoras = 0;
 $datosGrafico = [["Centro de Costo", "Horas"]];
@@ -36,7 +31,8 @@ if ($resultado) {
 
 $datosJson = json_encode($datosGrafico);
 
-// Comenzar el HTML
+// Comenzar el HTML y el resto del código...
+
 echo "<!DOCTYPE html><html><head>
       <title>Total Horas por Centro de Costo</title>
       <script type='text/javascript' src='https://www.gstatic.com/charts/loader.js'></script>
@@ -83,4 +79,3 @@ if ($resultado && $resultado->num_rows > 0) {
 echo "<div id='piechart' style='width: 900px; height: 500px;'></div>";
 echo "</body></html>";
 $conexion->close();
-?>
