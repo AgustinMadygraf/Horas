@@ -92,5 +92,3 @@ echo "</body></html>";
 
 // Cerrar la conexión
 $conexion->close();
-?>
-
