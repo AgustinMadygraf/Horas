@@ -1,13 +1,8 @@
 <?php
-#mostrar_horas.php
+//actualizar_centro.php
 include 'templates/header.php'; 
 require_once 'includes/db.php';
 require_once 'legajo.php';
-
-
-
-
-
 
 // Preparar la consulta SQL
 $sql = "SELECT * FROM registro_horas_trabajo WHERE legajo = ? AND horas_trabajadas > 1 AND centro_costo IS NOT NULL  ORDER BY fecha ASC";
