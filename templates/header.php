@@ -1,5 +1,5 @@
 <?php 
-// Obtener el legajo desde el parámetro GET
+//header.php
 
 $legajo = isset($_GET['legajo']) ? $_GET['legajo'] : '';
 
