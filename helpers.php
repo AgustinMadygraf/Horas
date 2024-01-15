@@ -15,4 +15,3 @@ function obtenerNombreCentroCosto($codigo) {
 
     return isset($nombresCentroCosto[$codigo]) ? $nombresCentroCosto[$codigo] : 'Desconocido';
 }
-?>
