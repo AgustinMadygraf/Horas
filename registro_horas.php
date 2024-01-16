@@ -19,12 +19,6 @@ if (!empty($legajo)) {
     $sql = "SELECT * FROM registro_horas_trabajo WHERE  horas_trabajadas > 1 ORDER BY fecha ASC";
 }
 
-
-
-
-// Preparar la consulta SQL para obtener los registros de horas de trabajo
-
-
 // Verificar si la conexión a la base de datos se estableció correctamente y manejar errores
 if ($conexion) {
     $stmt = $conexion->prepare($sql);
