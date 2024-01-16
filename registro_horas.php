@@ -12,18 +12,29 @@ require_once 'legajo.php';
 // Obtener el legajo desde el parámetro GET
 $legajo = isset($_GET['legajo']) ? $_GET['legajo'] : '';
 
-// Verificar si el legajo no está vacío
-if (!empty($legajo)) { $sql = "SELECT * FROM registro_horas_trabajo WHERE legajo = ? AND horas_trabajadas > 1 ORDER BY fecha ASC";
-}else {$sql = "SELECT * FROM registro_horas_trabajo WHERE  horas_trabajadas > 1 ORDER BY fecha ASC";
+// Verificar si el legajo no está vacío y construir la consulta SQL
+if (!empty($legajo)) {
+    $sql = "SELECT * FROM registro_horas_trabajo WHERE legajo = ? AND horas_trabajadas > 1 ORDER BY fecha ASC";
+} else {
+    $sql = "SELECT * FROM registro_horas_trabajo WHERE  horas_trabajadas > 1 ORDER BY fecha ASC";
 }
 
 
 
-// Preparar la consulta SQL
+
+// Preparar la consulta SQL para obtener los registros de horas de trabajo
 
 
-// Preparar la sentencia
-$stmt = $conexion->prepare($sql);
+// Verificar si la conexión a la base de datos se estableció correctamente y manejar errores
+if ($conexion) {
+    $stmt = $conexion->prepare($sql);
+    if (!$stmt) {
+        die("Error al preparar la consulta: " . $conexion->error);
+    }
+} else {
+    die("Error al conectar a la base de datos");
+}
+
 
 // Vincular parámetros
 $stmt->bind_param("s", $legajo);
