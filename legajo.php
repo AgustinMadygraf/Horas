@@ -6,6 +6,12 @@ $legajo = isset($_GET['legajo']) ? $_GET['legajo'] : '';
 
 // Verificar si el legajo no está vacío
 if (!empty($legajo)) {
+    mostrarInformacionPorLegajo($conexion, $legajo);
+} else {
+    mostrarFormularioBusqueda();
+}
+
+function mostrarInformacionPorLegajo($conexion, $legajo) {
     // Preparar la consulta SQL
     $sql = "SELECT * FROM informacion_asociados WHERE legajo = ?";
     
@@ -22,11 +28,10 @@ if (!empty($legajo)) {
 
         // Verificar si hay resultados
         if ($resultado->num_rows > 0) {
-            // Iniciar la tabla
+            // Mostrar los resultados en una tabla
             echo "<table border='1'>";
             echo "<tr><th>Legajo</th><th>Nombre</th><th>Apellido</th></tr>"; // Encabezados de la tabla
         
-            // Mostrar los resultados en filas de la tabla
             while ($fila = $resultado->fetch_assoc()) {
                 echo "<tr>";
                 echo "<td>" . htmlspecialchars($fila['legajo']) . "</td>";
@@ -35,18 +40,23 @@ if (!empty($legajo)) {
                 echo "</tr>";
             }
         
-            // Cerrar la tabla
             echo "</table><br>";
         } else {
             echo "No se encontraron resultados para el legajo: $legajo";
         }
-        // Cerrar la sentencia
         $stmt->close();
     } else {
         echo "Error al preparar la consulta: " . $conexion->error;
     }
-} else {
-    echo "Por favor, proporcione un legajo.<br>";
 }
 
-
+function mostrarFormularioBusqueda() {
+    echo "Por favor, proporcione un legajo.<br><br>";
+    // Incorpora la posibilidad de ingresar un legajo mediante un formulario
+    echo "<form method='GET'>
+            <input type='text' name='legajo' placeholder='Ingrese un legajo'>
+            <input type='submit' value='Buscar'>
+          </form>";
+    echo "<br><br>A continuación se expondrá";
+}
+?>

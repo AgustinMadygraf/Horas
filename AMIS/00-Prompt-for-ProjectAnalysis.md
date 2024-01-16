@@ -49,16 +49,19 @@ El objetivo es analizar un proyecto de software para identificar áreas específ
 
 ## Estructura de Carpetas y Archivos
 ```bash
-Horas/
+horas/
     actualizar_centro.php
     centro_costo.php
     centro_costo_logic.php
     database.php
+    DatabaseManager.php
+    GestorHoras.php
     helpers.php
     horas_1.sql
     horas_2.sql
     importar_datos_horas_trabajo.py
     index.php
+    index_test.php
     insertar_centro.php
     legajo.php
     mostrar_horas.php
@@ -84,7 +87,7 @@ Horas/
 
 ## Contenido de Archivos Seleccionados
 
-### C:\AppServ\www\Horas\actualizar_centro.php
+### C:\AppServ\www\horas\actualizar_centro.php
 ```plaintext
 <?php
 //actualizar\_centro.php
@@ -171,7 +174,7 @@ $conexion->close\(\);
 
 ```
 
-### C:\AppServ\www\Horas\centro_costo.php
+### C:\AppServ\www\horas\centro_costo.php
 ```plaintext
 <?php
 include 'templates/header.php'; 
@@ -257,7 +260,7 @@ $conexion->close\(\);
 
 ```
 
-### C:\AppServ\www\Horas\centro_costo_logic.php
+### C:\AppServ\www\horas\centro_costo_logic.php
 ```plaintext
 <?php
 require\_once 'includes/db.php';
@@ -303,7 +306,7 @@ function obtenerDatosCentroCosto\(\) {
 
 ```
 
-### C:\AppServ\www\Horas\database.php
+### C:\AppServ\www\horas\database.php
 ```plaintext
 <?php
 require\_once 'path/to/env.php'; // Asegúrate de incluir tu archivo de variables de entorno
@@ -346,7 +349,145 @@ class Database {
 
 ```
 
-### C:\AppServ\www\Horas\helpers.php
+### C:\AppServ\www\horas\DatabaseManager.php
+```plaintext
+<?php
+// DatabaseManager.php
+
+class DatabaseManager {
+    private $conexion;
+
+    public function \_\_construct\($servername, $username, $password, $dbname\) {
+        $this->conexion = new mysqli\($servername, $username, $password, $dbname\);
+
+        if \($this->conexion->connect\_error\) {
+            die\("Conexión fallida: " . $this->conexion->connect\_error\);
+        }
+    }
+
+    public function obtenerInformacionAsociados\(\) {
+        $sql = "SELECT \* FROM informacion\_asociados";
+        $stmt = $this->conexion->prepare\($sql\);
+        $stmt->execute\(\);
+        $resultado = $stmt->get\_result\(\);
+        $stmt->close\(\);
+
+        return $resultado;
+    }
+
+    public function close\(\) {
+        $this->conexion->close\(\);
+    }
+}
+
+```
+
+### C:\AppServ\www\horas\GestorHoras.php
+```plaintext
+<?php
+#Gestor\_horas.php
+include 'templates/header.php'; 
+require\_once 'includes/db.php';
+require\_once 'legajo.php';
+
+// Obtener el legajo desde el parámetro GET
+$legajo = isset\($\_GET\['legajo'\]\) ? $\_GET\['legajo'\] : '';
+
+// Verificar si el legajo no está vacío
+if \(\!empty\($legajo\)\) {
+    $sql = "SELECT \* FROM registro\_horas\_trabajo WHERE legajo = ? AND horas\_trabajadas > 1 ORDER BY fecha ASC";
+} else {
+    $sql = "SELECT \* FROM registro\_horas\_trabajo WHERE horas\_trabajadas > 1 ORDER BY fecha ASC";
+}
+
+// Preparar la sentencia
+$stmt = $conexion->prepare\($sql\);
+
+if \(\!empty\($legajo\)\) {
+    // Vincular parámetros para la consulta con legajo
+    $stmt->bind\_param\("s", $legajo\);
+}
+
+// Ejecutar la sentencia
+$stmt->execute\(\);
+
+// Obtener los resultados
+$resultado = $stmt->get\_result\(\);
+
+// Cerrar la sentencia
+$stmt->close\(\);
+
+// Comenzar el HTML
+echo "<\!DOCTYPE html><html><head><title>Registro de Horas</title></head><body>";
+function obtenerNombreCentroCosto\($codigo\) {
+    $nombresCentroCosto = \[
+        '1' => 'Maquina de bolsas',
+        '2' => 'Boletas y folletería',
+        '3' => 'Logistica',
+        '4' => 'Administración',
+        '5' => 'Club',
+        '6' => 'Mantenimiento',
+        '7' => 'Comedor',
+        '8' => 'Guardia',
+        '9' => 'Sistemas',
+        '10' => 'Enfermería',
+
+    \];
+
+    return isset\($nombresCentroCosto\[$codigo\]\) ? $nombresCentroCosto\[$codigo\] : 'Desconocido';
+}
+
+
+// Verificar si hay resultados y mostrarlos
+if \($resultado->num\_rows > 0\) {
+            // Convertir la fecha a día de la semana
+            $dia = date\('l', strtotime\($fila\["fecha"\]\)\); // 'l' devuelve el día completo en inglés, p.ej., "Monday"
+
+            // Traducir el día al español
+            $diasEnEspañol = \[
+                'Monday'    => 'Lunes',
+                'Tuesday'   => 'Martes',
+                'Wednesday' => 'Miércoles',
+                'Thursday'  => 'Jueves',
+                'Friday'    => 'Viernes',
+                'Saturday'  => 'Sábado',
+                'Sunday'    => 'Domingo',
+            \];
+            $diaEnEspañol = isset\($diasEnEspañol\[$dia\]\) ? $diasEnEspañol\[$dia\] : 'Desconocido';
+    
+    echo "<table border='1'>
+            <tr>
+                <th>Legajo</th>
+                <th>Fecha</th>
+                <th>Día</th>
+                <th>Horas</th>
+                <th>Centro de costo</th>
+                <th>Proceso</th>
+            </tr>";
+    while\($fila = $resultado->fetch\_assoc\(\)\) {
+        echo "<tr>
+                <td>".$fila\["legajo"\]."</td>
+                <td>".$fila\["fecha"\]."</td>  
+                <td>".$diaEnEspañol."</td>  
+                <td>".$fila\["horas\_trabajadas"\]."</td><td>";
+                echo obtenerNombreCentroCosto\($fila\["centro\_costo"\]\);
+                echo "</td><td>".$fila\["proceso"\]."</td> </tr>";
+    }
+    echo "</table>";
+} else {
+    echo "No se encontraron resultados.";
+}
+
+
+// Finalizar el HTML
+echo "</body></html>";
+
+// Cerrar la conexión
+$conexion->close\(\);
+
+```
+
+### C:\AppServ\www\horas\helpers.php
 ```plaintext
 <?php
 function obtenerNombreCentroCosto\($codigo\) {
@@ -368,7 +509,7 @@ function obtenerNombreCentroCosto\($codigo\) {
 
 ```
 
-### C:\AppServ\www\Horas\horas_1.sql
+### C:\AppServ\www\horas\horas_1.sql
 ```plaintext
 INSERT INTO \`centro\` \(\`id\_centro\`, \`nombre\`, \`descripcion\`\) VALUES
 \(8, '8', 'Guardia'\);
@@ -378,7 +519,7 @@ INSERT INTO \`proceso\` \(\`id\_proceso\`, \`id\_centro\`, \`nombre\`, \`descrip
 \(13, 6, 'e', 'Efluentes'\);
 ```
 
-### C:\AppServ\www\Horas\importar_datos_horas_trabajo.py
+### C:\AppServ\www\horas\importar_datos_horas_trabajo.py
 ```plaintext
 import os
 import pandas as pd
@@ -444,21 +585,24 @@ for archivo in archivos\_csv:
 
 ```
 
-### C:\AppServ\www\Horas\index.php
+### C:\AppServ\www\horas\index.php
 ```plaintext
 <?php 
+//index.php
+
 include 'templates/header.php'; 
 require\_once 'includes/db.php';
+require\_once 'DatabaseManager.php';
 
+// Crear una instancia de DatabaseManager
+$dbManager = new DatabaseManager\($servername, $username, $password, $dbname\);
 
 // Preparar la consulta SQL
 $sql = "SELECT \* FROM informacion\_asociados ";
 
 // Preparar la sentencia
+//$stmt = $dbManager->conexion->prepare\($sql\); //no anda
 $stmt = $conexion->prepare\($sql\);
-
-// Vincular parámetros
-$stmt->bind\_param\("s", $legajo\);
 
 // Ejecutar la sentencia
 $stmt->execute\(\);
@@ -468,6 +612,60 @@ $resultado = $stmt->get\_result\(\);
 
 // Cerrar la sentencia
 $stmt->close\(\);
+
+// Verificar si hay resultados y mostrarlos
+if \($resultado->num\_rows > 0\) {
+    echo "<table border='1'>
+            <tr>
+                <th>Legajo</th>
+                <th>Nombre</th>
+                <th>Apellido</th>
+            </tr>";
+    while\($fila = $resultado->fetch\_assoc\(\)\) {
+        echo "<tr>
+                <td><a href='mostrar\_horas.php?legajo=" . $fila\["legajo"\] . "'>" . $fila\["legajo"\] . "</a></td>
+                <td>" . $fila\["nombre"\] . "</td> 
+                <td>" . $fila\["apellido"\] . "</td> 
+            </tr>";
+    }
+    echo "</table>";
+} else {
+    echo "No se encontraron resultados.";
+}
+
+
+// Cerrar la conexión
+$dbManager->close\(\);
+
+include 'templates/footer.php';
+
+```
+
+### C:\AppServ\www\horas\index_test.php
+```plaintext
+<?
+// index.php
+
+require\_once 'DatabaseManager.php';
+require\_once 'includes/config.php'; // Asegúrate de que este archivo contenga las credenciales de la base de datos
+include 'templates/header.php';
+
+// Crear una instancia de DatabaseManager
+$dbManager = new DatabaseManager\($servername, $username, $password, $dbname\);
+
+// Obtener la información de asociados utilizando la función de la clase
+$resultado = $dbManager->obtenerInformacionAsociados\(\);
+
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -481,25 +679,24 @@ if \($resultado->num\_rows > 0\) {
             </tr>";
     while\($fila = $resultado->fetch\_assoc\(\)\) {
         echo "<tr>
-                <td> <a href='mostrar\_horas.php?legajo=".$fila\["legajo"\]."'>  ".$fila\["legajo"\]."  </a>   </td>
-                <td>".$fila\["nombre"\]."</td> 
-                <td>".$fila\["apellido"\]."</td> 
+                <td><a href='mostrar\_horas.php?legajo=" . $fila\["legajo"\] . "'>" . $fila\["legajo"\] . "</a></td>
+                <td>" . $fila\["nombre"\] . "</td>
+                <td>" . $fila\["apellido"\] . "</td>
             </tr>";
     }
     echo "</table>";
 } else {
     echo "No se encontraron resultados.";
 }
-echo "</body></html>";
 
 // Cerrar la conexión
-$conexion->close\(\);
+$dbManager->close\(\);
 
-include 'templates/footer.php'; ?>
+include 'templates/footer.php';
 
 ```
 
-### C:\AppServ\www\Horas\insertar_centro.php
+### C:\AppServ\www\horas\insertar_centro.php
 ```plaintext
 <?php
 include 'templates/header.php'; 
@@ -601,7 +798,7 @@ $conexion->close\(\);
 
 ```
 
-### C:\AppServ\www\Horas\legajo.php
+### C:\AppServ\www\horas\legajo.php
 ```plaintext
 <?php
 require\_once 'includes/db.php'; // Asegúrate de que la ruta al archivo db.php sea correcta
@@ -658,7 +855,7 @@ if \(\!empty\($legajo\)\) {
 
 ```
 
-### C:\AppServ\www\Horas\mostrar_horas.php
+### C:\AppServ\www\horas\mostrar_horas.php
 ```plaintext
 <?php
 #mostrar\_horas.php
@@ -766,7 +963,7 @@ $conexion->close\(\);
 
 ```
 
-### C:\AppServ\www\Horas\procesar.php
+### C:\AppServ\www\horas\procesar.php
 ```plaintext
 <?php
 //procesar.php
@@ -822,7 +1019,7 @@ $conexion->close\(\);
 
 ```
 
-### C:\AppServ\www\Horas\README.md
+### C:\AppServ\www\horas\README.md
 ```plaintext
 # Proyecto Horas
 
@@ -864,7 +1061,7 @@ Información sobre la licencia bajo la cual se distribuye el proyecto.
 
 ```
 
-### C:\AppServ\www\Horas\AMIS\01-ProjectAnalysis.md
+### C:\AppServ\www\horas\AMIS\01-ProjectAnalysis.md
 ```plaintext
 ## Análisis y Recomendaciones para el Proyecto "Horas"
 
@@ -963,7 +1160,7 @@ El proyecto "Horas" presenta una base funcional sólida pero necesita mejoras en
 ¿Deseas iniciar con la auditoría de seguridad o hay algún aspecto específico en el que te gustaría concentrarte primero?
 ```
 
-### C:\AppServ\www\Horas\AMIS\02-ToDoList.md
+### C:\AppServ\www\horas\AMIS\02-ToDoList.md
 ```plaintext
 # To Do List
 
@@ -1006,7 +1203,7 @@ El proyecto "Horas" presenta una base funcional sólida pero necesita mejoras en
 
 ```
 
-### C:\AppServ\www\Horas\AMIS\03-MySQL.md
+### C:\AppServ\www\horas\AMIS\03-MySQL.md
 ```plaintext
 
 
@@ -1045,7 +1242,7 @@ diseño, especialmente para estructuras más complejas o para explicar la lógic
 
 ```
 
-### C:\AppServ\www\Horas\CSS\header.css
+### C:\AppServ\www\horas\CSS\header.css
 ```plaintext
 
 /\*-----------------------HEADER.CSS--------------\*/
@@ -1188,7 +1385,7 @@ div.content {
 }
 ```
 
-### C:\AppServ\www\Horas\CSV\config.php
+### C:\AppServ\www\horas\CSV\config.php
 ```plaintext
 <?php
 define\('DB\_SERVER', 'localhost'\);
@@ -1199,18 +1396,17 @@ define\('DB\_NAME', 'horas'\);
 
 ```
 
-### C:\AppServ\www\Horas\includes\config.php
+### C:\AppServ\www\horas\includes\config.php
 ```plaintext
 <?php
 $servername = "localhost";
 $username = "root";
 $password = "12345678";
 $dbname = "horas";
-?>
 
 ```
 
-### C:\AppServ\www\Horas\includes\db.php
+### C:\AppServ\www\horas\includes\db.php
 ```plaintext
 <?php
 require\_once 'config.php';
@@ -1226,7 +1422,7 @@ if \($conexion->connect\_error\) {
 
 ```
 
-### C:\AppServ\www\Horas\templates\footer.php
+### C:\AppServ\www\horas\templates\footer.php
 ```plaintext
 <footer>
     <\!-- Contenido del pie de página -->
@@ -1236,7 +1432,7 @@ if \($conexion->connect\_error\) {
 
 ```
 
-### C:\AppServ\www\Horas\templates\header.php
+### C:\AppServ\www\horas\templates\header.php
 ```plaintext
 <?php 
 //header.php
