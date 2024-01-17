@@ -4,6 +4,8 @@
 include 'templates/header.php'; 
 require_once 'includes/db.php';
 require_once 'DatabaseManager.php';
+require_once 'legajo.php';
+
 
 // Crear una instancia de DatabaseManager
 $dbManager = new DatabaseManager($servername, $username, $password, $dbname);
