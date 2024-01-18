@@ -3,6 +3,8 @@
 <html>
 <head>
     <title>Registro de Horas</title>
+    <link rel="stylesheet" type="text/css" href="CSS/header.css">
+    <link rel="stylesheet" type="text/css" href="CSS/table_styles.css">
 </head>
 <body>
     <?php if ($resultado->num_rows > 0): ?>
