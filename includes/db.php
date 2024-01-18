@@ -1,7 +1,9 @@
 <?php
 //includes/db.php
-require_once 'config.php';
-
+$servername = "localhost";
+$username = "root";
+$password = "12345678";
+$dbname = "horas";
 // Crear conexión
 $conexion = new mysqli($servername, $username, $password, $dbname);
 
