@@ -18,8 +18,9 @@
             <?php while($fila = $resultado->fetch_assoc()): ?>
                 <?php 
                 $dia = date('l', strtotime($fila["fecha"]));
-                $diaEnEspañol = $diasEnEspañol[$dia] ?? 'Desconocido';
+                $diaEnEspañol = traducirDia($dia);
                 ?>
+                <tr>
                 <tr>
                     <td><?= $fila["legajo"] ?></td>
                     <td><?= $fila["fecha"] ?></td>

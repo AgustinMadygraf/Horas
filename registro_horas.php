@@ -12,6 +12,7 @@ require_once INCLUDES_PATH . '/db.php';
 require_once INCLUDES_PATH . '/legajo.php';
 require_once INCLUDES_PATH . '/centro_costo_helper.php';
 require_once INCLUDES_PATH . '/DatabaseConnection.php';
+require_once INCLUDES_PATH . '/DateHelper.php';
 
 
 // Función para preparar y configurar la consulta SQL
