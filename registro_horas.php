@@ -11,80 +11,54 @@ require_once INCLUDES_PATH . '/centro_costo_helper.php';
 
 $legajo = isset($_GET['legajo']) ? $_GET['legajo'] : '';
 
-// Verificar si el legajo no está vacío y construir la consulta SQL
+// Preparar la consulta SQL
+$sql = "SELECT * FROM registro_horas_trabajo WHERE horas_trabajadas > 1";
+$parametros = array();
+$tipos = '';
+
+// Agregar condición para el legajo si no está vacío
 if (!empty($legajo)) {
-    $sql = "SELECT * FROM registro_horas_trabajo WHERE legajo = ? AND horas_trabajadas > 1 ORDER BY fecha ASC";
-} else {
-    $sql = "SELECT * FROM registro_horas_trabajo WHERE  horas_trabajadas > 1 ORDER BY fecha ASC";
+    $sql .= " AND legajo = ?";
+    $parametros[] = & $legajo;
+    $tipos .= 's'; // Tipo 'string' para legajo
 }
 
-// Verificar si la conexión a la base de datos se estableció correctamente y manejar errores
-if ($conexion) {
-    $stmt = $conexion->prepare($sql);
-    if (!$stmt) {
-        die("Error al preparar la consulta: " . $conexion->error);
-    }
-} else {
-    die("Error al conectar a la base de datos");
+// Verificar si la conexión a la base de datos se estableció correctamente
+if (!$conexion) {
+    die("Error al conectar a la base de datos: " . mysqli_connect_error());
 }
 
-// Vincular parámetros
-$stmt->bind_param("s", $legajo);
+$stmt = $conexion->prepare($sql);
+if (!$stmt) {
+    die("Error al preparar la consulta: " . $conexion->error);
+}
 
-// Ejecutar la sentencia
-$stmt->execute();
+// Vincular parámetros si es necesario
+if (!empty($legajo)) {
+    call_user_func_array(array($stmt, 'bind_param'), array_merge(array($tipos), $parametros));
+}
 
-// Obtener los resultados
+if (!$stmt->execute()) {
+    die("Error al ejecutar la sentencia: " . $stmt->error);
+}
+
 $resultado = $stmt->get_result();
-
-// Cerrar la sentencia
 $stmt->close();
 
-// Comenzar el HTML
+echo "<!DOCTYPE html><html><head><title>Registro de Horas</title></head><body>";
 
-// Verificar si hay resultados y mostrarlos
 if ($resultado->num_rows > 0) {
-            // Convertir la fecha a día de la semana
-            $dia = date('l', strtotime($fila["fecha"])); // 'l' devuelve el día completo en inglés, p.ej., "Monday"
-
-            // Traducir el día al español
-            $diasEnEspañol = [
-                'Monday'    => 'Lunes',
-                'Tuesday'   => 'Martes',
-                'Wednesday' => 'Miércoles',
-                'Thursday'  => 'Jueves',
-                'Friday'    => 'Viernes',
-                'Saturday'  => 'Sábado',
-                'Sunday'    => 'Domingo',
-            ];
-            $diaEnEspañol = isset($diasEnEspañol[$dia]) ? $diasEnEspañol[$dia] : 'Desconocido';
-    
-    echo "<table border='1'>
-            <tr>
-                <th>Legajo</th>
-                <th>Fecha</th>
-                <th>Día</th>
-                <th>Horas</th>
-                <th>Centro de costo</th>
-                <th>Proceso</th>
-            </tr>";
+    echo "<table border='1'><tr><th>Legajo</th><th>Fecha</th><th>Día</th><th>Horas</th><th>Centro de costo</th><th>Proceso</th></tr>";
     while($fila = $resultado->fetch_assoc()) {
-        echo "<tr>
-                <td>".$fila["legajo"]."</td>
-                <td>".$fila["fecha"]."</td>  
-                <td>".$diaEnEspañol."</td>  
-                <td>".$fila["horas_trabajadas"]."</td><td>";
-                echo obtenerNombreCentroCosto($fila["centro_costo"]);
-                echo "</td><td>".$fila["proceso"]."</td> </tr>";
+        $dia = date('l', strtotime($fila["fecha"]));
+        $diaEnEspañol = $diasEnEspañol[$dia] ?? 'Desconocido';
+        echo "<tr><td>".$fila["legajo"]."</td><td>".$fila["fecha"]."</td><td>".$diaEnEspañol."</td><td>".$fila["horas_trabajadas"]."</td><td>".obtenerNombreCentroCosto($fila["centro_costo"])."</td><td>".$fila["proceso"]."</td></tr>";
     }
     echo "</table>";
 } else {
     echo "No se encontraron resultados.";
 }
 
-// Finalizar el HTML
 echo "</body></html>";
-
-// Cerrar la conexión
 $conexion->close();
 ?>
