@@ -11,39 +11,43 @@
 <body>
     <?php if ($resultado->num_rows > 0): ?>
         <table border='1'>
-            <script>
-                $(document).ready( function () {
-                    $('table').DataTable();
-                });
-            </script>
-
-            <tr>
-                <th>Legajo</th>
-                <th>Fecha</th>
-                <th>Día</th>
-                <th>Horas</th>
-                <th>Centro de costo</th>
-                <th>Proceso</th>
-            </tr>
-            <?php while($fila = $resultado->fetch_assoc()): ?>
-                <?php 
-                $fechaObj = DateTime::createFromFormat('Y-m-d', $fila["fecha"]);
-                $fechaFormateada = $fechaObj ? $fechaObj->format('d/m/Y') : 'Fecha inválida';
-                $dia = date('l', strtotime($fila["fecha"]));
-                $diaEnEspañol = traducirDia($dia);
-                ?>
+            <thead>
                 <tr>
-                    <td><?= $fila["legajo"] ?></td>
-                    <td><?= $fechaFormateada ?></td>
-                    <td><?= $diaEnEspañol ?></td>
-                    <td><?= $fila["horas_trabajadas"] ?></td>
-                    <td><?= obtenerNombreCentroCosto($fila["centro_costo"]) ?></td>
-                    <td><?= $fila["proceso"] ?></td>
+                    <th>Legajo</th>
+                    <th>Fecha</th>
+                    <th>Día</th>
+                    <th>Horas</th>
+                    <th>Centro de costo</th>
+                    <th>Proceso</th>
                 </tr>
-            <?php endwhile; ?>
+            </thead>
+            <tbody>
+                <?php while($fila = $resultado->fetch_assoc()): ?>
+                    <?php 
+                    $fechaObj = DateTime::createFromFormat('Y-m-d', $fila["fecha"]);
+                    $fechaFormateada = $fechaObj ? $fechaObj->format('d/m/Y') : 'Fecha inválida';
+                    $dia = date('l', strtotime($fila["fecha"]));
+                    $diaEnEspañol = traducirDia($dia);
+                    ?>
+                    <tr>
+                        <td><?= $fila["legajo"] ?></td>
+                        <td><?= $fechaFormateada ?></td>
+                        <td><?= $diaEnEspañol ?></td>
+                        <td><?= $fila["horas_trabajadas"] ?></td>
+                        <td><?= obtenerNombreCentroCosto($fila["centro_costo"]) ?></td>
+                        <td><?= $fila["proceso"] ?></td>
+                    </tr>
+                <?php endwhile; ?>
+            </tbody>
         </table>
     <?php else: ?>
         <p>No se encontraron resultados.</p>
     <?php endif; ?>
+
+    <script>
+        $(document).ready(function() {
+            $('table').DataTable();
+        });
+    </script>
 </body>
 </html>
