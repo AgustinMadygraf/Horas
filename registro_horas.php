@@ -12,6 +12,7 @@ require_once INCLUDES_PATH . '/db.php';
 require_once INCLUDES_PATH . '/legajo.php';
 require_once INCLUDES_PATH . '/centro_costo_helper.php';
 
+
 // Función para preparar y configurar la consulta SQL
 function prepararConsulta($conexion, $legajo) {
     $sql = "SELECT * FROM registro_horas_trabajo WHERE horas_trabajadas > 1";
