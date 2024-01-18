@@ -2,8 +2,8 @@
 //actualizar_centro.php
 include 'templates/header.php'; 
 require_once 'includes/db.php';
-require_once 'legajo.php';
-require_once 'helpers.php'; // Asegúrate de que este archivo contenga la función obtenerNombreCentroCosto
+require_once 'includes/legajo.php';
+require_once 'includes/helpers.php'; // Asegúrate de que este archivo contenga la función obtenerNombreCentroCosto
 
 // Preparar la consulta SQL
 $sql = "SELECT * FROM registro_horas_trabajo WHERE legajo = ? AND horas_trabajadas > 1 AND centro_costo IS NOT NULL  ORDER BY fecha ASC";

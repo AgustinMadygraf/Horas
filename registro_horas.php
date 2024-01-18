@@ -6,8 +6,7 @@ define('INCLUDES_PATH', BASE_PATH . '/includes'); // Ruta de los archivos de inc
 
 include TEMPLATES_PATH . '/header.php';
 require_once INCLUDES_PATH . '/db.php';
-require_once 'legajo.php';
-
+require_once 'includes/legajo.php';
 
 // Obtener el legajo desde el parámetro GET
 $legajo = isset($_GET['legajo']) ? $_GET['legajo'] : '';

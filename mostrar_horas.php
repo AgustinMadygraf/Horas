@@ -2,7 +2,7 @@
 #mostrar_horas.php
 include 'templates/header.php'; 
 require_once 'includes/db.php';
-require_once 'legajo.php';
+require_once 'includes/legajo.php';
 
 
 // Obtener el legajo desde el parámetro GET
