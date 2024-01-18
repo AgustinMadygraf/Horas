@@ -42,23 +42,11 @@ if (!$stmt->execute()) {
     die("Error al ejecutar la sentencia: " . $stmt->error);
 }
 
+// Obtener los resultados
 $resultado = $stmt->get_result();
 $stmt->close();
 
-echo "<!DOCTYPE html><html><head><title>Registro de Horas</title></head><body>";
+// Incluir el archivo de plantilla para la presentación
+include TEMPLATES_PATH . '/registro_horas_template.php';
 
-if ($resultado->num_rows > 0) {
-    echo "<table border='1'><tr><th>Legajo</th><th>Fecha</th><th>Día</th><th>Horas</th><th>Centro de costo</th><th>Proceso</th></tr>";
-    while($fila = $resultado->fetch_assoc()) {
-        $dia = date('l', strtotime($fila["fecha"]));
-        $diaEnEspañol = $diasEnEspañol[$dia] ?? 'Desconocido';
-        echo "<tr><td>".$fila["legajo"]."</td><td>".$fila["fecha"]."</td><td>".$diaEnEspañol."</td><td>".$fila["horas_trabajadas"]."</td><td>".obtenerNombreCentroCosto($fila["centro_costo"])."</td><td>".$fila["proceso"]."</td></tr>";
-    }
-    echo "</table>";
-} else {
-    echo "No se encontraron resultados.";
-}
-
-echo "</body></html>";
 $conexion->close();
-?>
