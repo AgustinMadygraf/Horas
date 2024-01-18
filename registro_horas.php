@@ -11,6 +11,7 @@ include TEMPLATES_PATH . '/header.php';
 require_once INCLUDES_PATH . '/db.php';
 require_once INCLUDES_PATH . '/legajo.php';
 require_once INCLUDES_PATH . '/centro_costo_helper.php';
+require_once INCLUDES_PATH . '/DatabaseConnection.php';
 
 
 // Función para preparar y configurar la consulta SQL
@@ -41,9 +42,9 @@ function prepararConsulta($conexion, $legajo) {
 try {
     $legajo = isset($_GET['legajo']) ? filter_var($_GET['legajo'], FILTER_SANITIZE_STRING) : '';
 
-    if (!$conexion) {
-        throw new Exception("Error al conectar a la base de datos.");
-    }
+    // Obtener la instancia de la conexión a la base de datos
+    $dbInstance = DatabaseConnection::getInstance();
+    $conexion = $dbInstance->getConnection();
 
     $stmt = prepararConsulta($conexion, $legajo);
 
@@ -60,6 +61,3 @@ try {
     echo "Se ha producido un error. Por favor, intente de nuevo más tarde.";
     exit;
 }
-
-$conexion->close();
-?>
