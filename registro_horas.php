@@ -1,54 +1,64 @@
 <?php
-//registro_horas.php
+// registro_horas.php
+
+// Definiciones de rutas
 define('BASE_PATH', __DIR__); 
 define('TEMPLATES_PATH', BASE_PATH . '/templates'); 
 define('INCLUDES_PATH', BASE_PATH . '/includes'); 
 
+// Inclusión de archivos
 include TEMPLATES_PATH . '/header.php';
 require_once INCLUDES_PATH . '/db.php';
 require_once INCLUDES_PATH . '/legajo.php';
 require_once INCLUDES_PATH . '/centro_costo_helper.php';
 
-// Validar y sanear la entrada del legajo
-$legajo = isset($_GET['legajo']) ? $_GET['legajo'] : '';
-$legajo = filter_var($legajo, FILTER_SANITIZE_STRING);
+// Función para preparar y configurar la consulta SQL
+function prepararConsulta($conexion, $legajo) {
+    $sql = "SELECT * FROM registro_horas_trabajo WHERE horas_trabajadas > 1";
+    $parametros = array();
+    $tipos = '';
 
-// Preparar la consulta SQL
-$sql = "SELECT * FROM registro_horas_trabajo WHERE horas_trabajadas > 1";
-$parametros = array();
-$tipos = '';
+    if (!empty($legajo)) {
+        $sql .= " AND legajo = ?";
+        $parametros[] = & $legajo;
+        $tipos .= 's';
+    }
 
-// Agregar condición para el legajo si no está vacío
-if (!empty($legajo)) {
-    $sql .= " AND legajo = ?";
-    $parametros[] = & $legajo;
-    $tipos .= 's'; // Tipo 'string' para legajo
+    $stmt = $conexion->prepare($sql);
+    if (!$stmt) {
+        throw new Exception("Error al preparar la consulta: " . $conexion->error);
+    }
+
+    if (!empty($legajo)) {
+        call_user_func_array(array($stmt, 'bind_param'), array_merge(array($tipos), $parametros));
+    }
+
+    return $stmt;
 }
 
-// Verificar si la conexión a la base de datos se estableció correctamente
-if (!$conexion) {
-    die("Error al conectar a la base de datos: " . mysqli_connect_error());
+// Manejo principal
+try {
+    $legajo = isset($_GET['legajo']) ? filter_var($_GET['legajo'], FILTER_SANITIZE_STRING) : '';
+
+    if (!$conexion) {
+        throw new Exception("Error al conectar a la base de datos.");
+    }
+
+    $stmt = prepararConsulta($conexion, $legajo);
+
+    if (!$stmt->execute()) {
+        throw new Exception("Error al ejecutar la sentencia: " . $stmt->error);
+    }
+
+    $resultado = $stmt->get_result();
+    $stmt->close();
+
+    include TEMPLATES_PATH . '/registro_horas_template.php';
+} catch (Exception $e) {
+    error_log($e->getMessage());
+    echo "Se ha producido un error. Por favor, intente de nuevo más tarde.";
+    exit;
 }
-
-$stmt = $conexion->prepare($sql);
-if (!$stmt) {
-    die("Error al preparar la consulta: " . $conexion->error);
-}
-
-// Vincular parámetros si es necesario
-if (!empty($legajo)) {
-    call_user_func_array(array($stmt, 'bind_param'), array_merge(array($tipos), $parametros));
-}
-
-if (!$stmt->execute()) {
-    die("Error al ejecutar la sentencia: " . $stmt->error);
-}
-
-$resultado = $stmt->get_result();
-$stmt->close();
-
-// Incluir el archivo de plantilla para la presentación
-include TEMPLATES_PATH . '/registro_horas_template.php';
 
 $conexion->close();
 ?>
