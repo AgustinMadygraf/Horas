@@ -1,103 +1,64 @@
 <?php
-#mostrar_horas.php
-include 'templates/header.php'; 
-require_once 'includes/db.php';
-require_once 'includes/legajo.php';
+// registro_horas.php
+
+// Definiciones de rutas
+define('BASE_PATH', __DIR__); 
+define('TEMPLATES_PATH', BASE_PATH . '/templates'); 
+define('INCLUDES_PATH', BASE_PATH . '/includes'); 
+
+// Inclusión de archivos
+include TEMPLATES_PATH . '/header.php';
+require_once INCLUDES_PATH . '/db.php';
+//require_once INCLUDES_PATH . '/legajo.php';
+require_once INCLUDES_PATH . '/centro_costo_helper.php';
+require_once INCLUDES_PATH . '/DatabaseConnection.php';
+require_once INCLUDES_PATH . '/DateHelper.php';
 
 
-// Obtener el legajo desde el parámetro GET
-$legajo = isset($_GET['legajo']) ? $_GET['legajo'] : '';
+// Función para preparar y configurar la consulta SQL
+function prepararConsulta($conexion, $legajo) {
+    $sql = "SELECT * FROM registro_horas_trabajo WHERE horas_trabajadas > 1";
+    $parametros = array();
+    $tipos = '';
 
-// Verificar si el legajo no está vacío
-if (!empty($legajo)) { $sql = "SELECT * FROM registro_horas_trabajo WHERE legajo = ? AND horas_trabajadas > 1 ORDER BY fecha ASC";
-}else {$sql = "SELECT * FROM registro_horas_trabajo WHERE  horas_trabajadas > 1 ORDER BY fecha ASC";
-}
-
-
-
-// Preparar la consulta SQL
-
-
-// Preparar la sentencia
-$stmt = $conexion->prepare($sql);
-
-// Vincular parámetros
-$stmt->bind_param("s", $legajo);
-
-// Ejecutar la sentencia
-$stmt->execute();
-
-// Obtener los resultados
-$resultado = $stmt->get_result();
-
-// Cerrar la sentencia
-$stmt->close();
-
-// Comenzar el HTML
-echo "<!DOCTYPE html><html><head><title>Registro de Horas</title></head><body>";
-function obtenerNombreCentroCosto($codigo) {
-    $nombresCentroCosto = [
-        '1' => 'Maquina de bolsas',
-        '2' => 'Boletas y folletería',
-        '3' => 'Logistica',
-        '4' => 'Administración',
-        '5' => 'Club',
-        '6' => 'Mantenimiento',
-        '7' => 'Comedor',
-        '8' => 'Guardia',
-        '9' => 'Sistemas',
-        '10' => 'Enfermería',
-
-    ];
-
-    return isset($nombresCentroCosto[$codigo]) ? $nombresCentroCosto[$codigo] : 'Desconocido';
-}
-
-
-// Verificar si hay resultados y mostrarlos
-if ($resultado->num_rows > 0) {
-            // Convertir la fecha a día de la semana
-            $dia = date('l', strtotime($fila["fecha"])); // 'l' devuelve el día completo en inglés, p.ej., "Monday"
-
-            // Traducir el día al español
-            $diasEnEspañol = [
-                'Monday'    => 'Lunes',
-                'Tuesday'   => 'Martes',
-                'Wednesday' => 'Miércoles',
-                'Thursday'  => 'Jueves',
-                'Friday'    => 'Viernes',
-                'Saturday'  => 'Sábado',
-                'Sunday'    => 'Domingo',
-            ];
-            $diaEnEspañol = isset($diasEnEspañol[$dia]) ? $diasEnEspañol[$dia] : 'Desconocido';
-    
-    echo "<table border='1'>
-            <tr>
-                <th>Legajo</th>
-                <th>Fecha</th>
-                <th>Día</th>
-                <th>Horas</th>
-                <th>Centro de costo</th>
-                <th>Proceso</th>
-            </tr>";
-    while($fila = $resultado->fetch_assoc()) {
-        echo "<tr>
-                <td>".$fila["legajo"]."</td>
-                <td>".$fila["fecha"]."</td>  
-                <td>".$diaEnEspañol."</td>  
-                <td>".$fila["horas_trabajadas"]."</td><td>";
-                echo obtenerNombreCentroCosto($fila["centro_costo"]);
-                echo "</td><td>".$fila["proceso"]."</td> </tr>";
+    if (!empty($legajo)) {
+        $sql .= " AND legajo = ?";
+        $parametros[] = & $legajo;
+        $tipos .= 's';
     }
-    echo "</table>";
-} else {
-    echo "No se encontraron resultados.";
+
+    $stmt = $conexion->prepare($sql);
+    if (!$stmt) {
+        throw new Exception("Error al preparar la consulta: " . $conexion->error);
+    }
+
+    if (!empty($legajo)) {
+        call_user_func_array(array($stmt, 'bind_param'), array_merge(array($tipos), $parametros));
+    }
+
+    return $stmt;
 }
 
+// Manejo principal
+try {
+    $legajo = isset($_GET['legajo']) ? filter_var($_GET['legajo'], FILTER_SANITIZE_STRING) : '';
 
-// Finalizar el HTML
-echo "</body></html>";
+    // Obtener la instancia de la conexión a la base de datos
+    $dbInstance = DatabaseConnection::getInstance();
+    $conexion = $dbInstance->getConnection();
 
-// Cerrar la conexión
-$conexion->close();
-?>
+    $stmt = prepararConsulta($conexion, $legajo);
+
+    if (!$stmt->execute()) {
+        throw new Exception("Error al ejecutar la sentencia: " . $stmt->error);
+    }
+
+    $resultado = $stmt->get_result();
+    $stmt->close();
+
+    include TEMPLATES_PATH . '/registro_horas_template.php';
+} catch (Exception $e) {
+    error_log($e->getMessage());
+    echo "Se ha producido un error. Por favor, intente de nuevo más tarde.";
+    exit;
+}

@@ -2,7 +2,7 @@
 <html>
 <head>
     <title>Total Horas por Centro de Costo</title>
-    <link rel="stylesheet" type="text/css" href="path/to/your/main_stylesheet.css"> <!-- Asegúrate de enlazar tu hoja de estilos principal aquí -->
+    <link rel="stylesheet" type="text/css" href="CSS/table_styles.css">
     <script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
     <script type="text/javascript">
         google.charts.load('current', {'packages':['corechart']});
@@ -21,5 +21,13 @@
             chart.draw(data, options);
         }
     </script>
+    <style> #piechart {
+            margin-left: auto;
+                margin-right: auto;
+                width: 100%; 
+                max-width: 900px;
+                height: 500px; }
+
+    </style>
 </head>
 <body>
