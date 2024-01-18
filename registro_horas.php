@@ -9,7 +9,9 @@ require_once INCLUDES_PATH . '/db.php';
 require_once INCLUDES_PATH . '/legajo.php';
 require_once INCLUDES_PATH . '/centro_costo_helper.php';
 
+// Validar y sanear la entrada del legajo
 $legajo = isset($_GET['legajo']) ? $_GET['legajo'] : '';
+$legajo = filter_var($legajo, FILTER_SANITIZE_STRING);
 
 // Preparar la consulta SQL
 $sql = "SELECT * FROM registro_horas_trabajo WHERE horas_trabajadas > 1";
@@ -42,7 +44,6 @@ if (!$stmt->execute()) {
     die("Error al ejecutar la sentencia: " . $stmt->error);
 }
 
-// Obtener los resultados
 $resultado = $stmt->get_result();
 $stmt->close();
 
@@ -50,3 +51,4 @@ $stmt->close();
 include TEMPLATES_PATH . '/registro_horas_template.php';
 
 $conexion->close();
+?>
