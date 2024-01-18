@@ -1,14 +1,14 @@
 <?php
-#registro_horas.php
-define('BASE_PATH', __DIR__); // Ruta base del proyecto
-define('TEMPLATES_PATH', BASE_PATH . '/templates'); // Ruta de los archivos de plantillas
-define('INCLUDES_PATH', BASE_PATH . '/includes'); // Ruta de los archivos de inclusión
+//registro_horas.php
+define('BASE_PATH', __DIR__); 
+define('TEMPLATES_PATH', BASE_PATH . '/templates'); 
+define('INCLUDES_PATH', BASE_PATH . '/includes'); 
 
 include TEMPLATES_PATH . '/header.php';
 require_once INCLUDES_PATH . '/db.php';
-require_once 'includes/legajo.php';
+require_once INCLUDES_PATH . '/legajo.php';
+require_once INCLUDES_PATH . '/centro_costo_helper.php';
 
-// Obtener el legajo desde el parámetro GET
 $legajo = isset($_GET['legajo']) ? $_GET['legajo'] : '';
 
 // Verificar si el legajo no está vacío y construir la consulta SQL
@@ -28,7 +28,6 @@ if ($conexion) {
     die("Error al conectar a la base de datos");
 }
 
-
 // Vincular parámetros
 $stmt->bind_param("s", $legajo);
 
@@ -42,25 +41,6 @@ $resultado = $stmt->get_result();
 $stmt->close();
 
 // Comenzar el HTML
-echo "<!DOCTYPE html><html><head><title>Registro de Horas</title></head><body>";
-function obtenerNombreCentroCosto($codigo) {
-    $nombresCentroCosto = [
-        '1' => 'Maquina de bolsas',
-        '2' => 'Boletas y folletería',
-        '3' => 'Logistica',
-        '4' => 'Administración',
-        '5' => 'Club',
-        '6' => 'Mantenimiento',
-        '7' => 'Comedor',
-        '8' => 'Guardia',
-        '9' => 'Sistemas',
-        '10' => 'Enfermería',
-
-    ];
-
-    return isset($nombresCentroCosto[$codigo]) ? $nombresCentroCosto[$codigo] : 'Desconocido';
-}
-
 
 // Verificar si hay resultados y mostrarlos
 if ($resultado->num_rows > 0) {
@@ -101,7 +81,6 @@ if ($resultado->num_rows > 0) {
 } else {
     echo "No se encontraron resultados.";
 }
-
 
 // Finalizar el HTML
 echo "</body></html>";
