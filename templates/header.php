@@ -12,7 +12,8 @@ echo "<li><a href='insertar_centro.php?legajo=".$legajo."'>Insertar</a></li>";
 echo "<li><a href='mostrar_horas.php?legajo=".$legajo."'>Visualizar</a></li>";
 echo "<li><a href='actualizar_centro.php?legajo=".$legajo."'>Actualizar</a></li>";
 echo "<li><a href='centro_costo.php'>Centro de Costos</a></li>";
-echo "<li><a href='/phpMyAdmin/' target='_blank'>Visit the AppServ Open Project</a></li>";
-echo "<li><a href='registro_horas.php?legajo=".$legajo."'> Test </a></li>";
+echo "<li><a href='/horas/index.php' ".($paginaActual == '/horas/index.php' ? $claseActiva : "").">Horas</a></li>";
+echo "<li><a href='/DigiRail/index.php' ".($paginaActual == '/DigiRail/index.php' ? $claseActiva : "").">DigiRail</a></li>";
+echo "<li><a href='/Bolsas//phpMyAdmin/' target='_blank'>PHP MyAdmin</a></li>";
 echo "</ul></div></header>"
 ?>
