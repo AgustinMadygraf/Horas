@@ -1,5 +1,6 @@
 <!--centro_costo.php-->
-<br><br><form method="GET" action="centro_costo.php">
+<br><br>
+<form method="GET" action="centro_costo.php">
     Fecha inicio: <input type="date" name="fecha_inicio" value="2023-11-01">
     Fecha fin: <input type="date" name="fecha_fin" value="2023-11-20">
     <input type="submit" value="Filtrar">
@@ -14,7 +15,16 @@ $fecha_inicio = isset($_GET['fecha_inicio']) && !empty($_GET['fecha_inicio']) ? 
 $fecha_fin = isset($_GET['fecha_fin']) && !empty($_GET['fecha_fin']) ? $_GET['fecha_fin'] : '2023-11-20';
 
 function obtenerDatosCentroCosto($conexion, $fecha_inicio, $fecha_fin) {
-    $sql = "SELECT COALESCE(centro_costo, 'Sin Asignar') AS centro_costo, SUM(horas_trabajadas) AS total_horas FROM registro_horas_trabajo GROUP BY COALESCE(centro_costo, 'Sin Asignar') ORDER BY total_horas DESC";
+    
+    //$sql = "SELECT COALESCE(centro_costo, 'Sin Asignar') AS centro_costo, SUM(horas_trabajadas) AS total_horas FROM registro_horas_trabajo GROUP BY COALESCE(centro_costo, 'Sin Asignar') ORDER BY total_horas DESC";
+    $sql = "SELECT COALESCE(centro_costo, 'Sin Asignar') AS centro_costo, SUM(horas_trabajadas) AS total_horas 
+    FROM registro_horas_trabajo 
+    WHERE fecha BETWEEN ? AND ? 
+    GROUP BY COALESCE(centro_costo, 'Sin Asignar') 
+    ORDER BY total_horas DESC";
+
+
+
     $stmt = $conexion->prepare($sql);
     $stmt->bind_param("ss", $fecha_inicio, $fecha_fin);
     
@@ -53,10 +63,10 @@ $conexion->close();
 include 'includes/centro_costo_chart.php';
 include 'includes/centro_costo_table.php';
 
+$fecha_inicio_formato = date("d/m/Y", strtotime($fecha_inicio));
+$fecha_fin_formato = date("d/m/Y", strtotime($fecha_fin));
 
-
-
-echo '<br><br><br> Datos desde "'.$fecha_inicio.'" hasta "'.$fecha_fin.'" <br>';
+echo '<br><br><br> Datos desde "'.$fecha_inicio_formato.'" hasta "'.$fecha_fin_formato.'" <br>';
 echo "SQL = <br>" . htmlspecialchars($sql);
 
 ?>
