@@ -1,3 +1,4 @@
+<!--registro_horas_template.php -->
 <!DOCTYPE html>
 <html>
 <head>
@@ -14,6 +15,8 @@
             <thead>
                 <tr>
                     <th>Legajo</th>
+                    <th>Nombre</th>
+                    <th>Apellido</th>
                     <th>Fecha</th>
                     <th>Día</th>
                     <th>Horas</th>
@@ -31,6 +34,8 @@
                     ?>
                     <tr>
                         <td><?= $fila["legajo"] ?></td>
+                        <td><?= $fila["nombre"] ?></td>
+                        <td><?= $fila["apellido"] ?></td>
                         <td><?= $fechaFormateada ?></td>
                         <td><?= $diaEnEspañol ?></td>
                         <td><?= $fila["horas_trabajadas"] ?></td>
