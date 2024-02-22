@@ -7,6 +7,7 @@ require_once 'includes/helpers.php';
 function obtenerDatosCentroCosto($conexion, $fecha_inicio, $fecha_fin) {
     $sql = "SELECT COALESCE(centro_costo, 'Sin Asignar') AS centro_costo, SUM(horas_trabajadas) AS total_horas FROM registro_horas_trabajo GROUP BY COALESCE(centro_costo, 'Sin Asignar') ORDER BY total_horas DESC";
     $stmt = $conexion->prepare($sql);
+    $stmt->bind_param("ss", $fecha_inicio, $fecha_fin);
     
     if (!$stmt->execute()) {
         throw new Exception("Error al ejecutar la consulta: " . $stmt->error);
