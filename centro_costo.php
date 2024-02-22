@@ -1,3 +1,4 @@
+<!--centro_costo.php-->
 <?php
 include 'templates/header.php'; 
 require_once 'includes/db.php';
@@ -40,4 +41,10 @@ try {
 $conexion->close();
 include 'includes/centro_costo_chart.php';
 include 'includes/centro_costo_table.php';
+
+
+
+
+echo "<br><br><br> Datos desde $fecha_inicio hasta $fecha_fin <br>";
+
 ?>

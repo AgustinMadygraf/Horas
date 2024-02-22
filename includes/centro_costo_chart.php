@@ -1,3 +1,4 @@
+<!--centro_costo_chart.php-->
 <!DOCTYPE html>
 <html>
 <head>
@@ -15,7 +16,7 @@
                 title: 'Total Horas por Centro de Costo',
                 pieHole: 0.4, // Para un diseño de donut chart
                 chartArea: { width: '100%', height: '80%' }, // Ajustar para responsividad
-                // Otras opciones de estilo...
+                
             };
             var chart = new google.visualization.PieChart(document.getElementById('piechart'));
             chart.draw(data, options);
