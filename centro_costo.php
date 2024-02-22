@@ -5,6 +5,7 @@ $fecha_inicio = isset($_GET['fecha_inicio']) && !empty($_GET['fecha_inicio']) ? 
 $fecha_fin = isset($_GET['fecha_fin']) && !empty($_GET['fecha_fin']) ? $_GET['fecha_fin'] : '2023-11-20';
 $fecha_inicio_formato = date("d/m/Y", strtotime($fecha_inicio));
 $fecha_fin_formato = date("d/m/Y", strtotime($fecha_fin));
+$intervalo_dias = $fecha_fin - $fecha_inicio; //ayuda acá
 ?>
 <form method="GET" action="centro_costo.php">
     Fecha inicio: <input type="date" name="fecha_inicio" value="<?php echo $fecha_inicio; ?>">
@@ -13,6 +14,18 @@ $fecha_fin_formato = date("d/m/Y", strtotime($fecha_fin));
 </form>
 
 <?php
+// Creación de objetos DateTime para las fechas de inicio y fin
+$fechaInicioObj = new DateTime($fecha_inicio);
+$fechaFinObj = new DateTime($fecha_fin);
+
+// Calculando la diferencia entre las fechas
+$intervalo = $fechaInicioObj->diff($fechaFinObj);
+
+// Extrayendo el número total de días del intervalo
+$intervalo_dias = $intervalo->days;
+
+echo "Cantidad de días seleccionados: " . $intervalo_dias . "<br><br>";
+
 include 'templates/header.php'; 
 require_once 'includes/db.php';
 require_once 'includes/helpers.php';
