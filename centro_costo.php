@@ -4,7 +4,7 @@ include 'templates/header.php';
 require_once 'includes/db.php';
 require_once 'includes/helpers.php';
 
-function obtenerDatosCentroCosto($conexion) {
+function obtenerDatosCentroCosto($conexion, $fecha_inicio, $fecha_fin) {
     $sql = "SELECT COALESCE(centro_costo, 'Sin Asignar') AS centro_costo, SUM(horas_trabajadas) AS total_horas FROM registro_horas_trabajo GROUP BY COALESCE(centro_costo, 'Sin Asignar') ORDER BY total_horas DESC";
     $stmt = $conexion->prepare($sql);
     
@@ -31,7 +31,7 @@ function obtenerDatosCentroCosto($conexion) {
 }
 
 try {
-    list($datosGrafico, $totalHoras, $resultado) = obtenerDatosCentroCosto($conexion);
+    list($datosGrafico, $totalHoras, $resultado) = obtenerDatosCentroCosto($conexion, $fecha_inicio, $fecha_fin);
     $datosJson = json_encode($datosGrafico);
 } catch (Exception $e) {
     error_log("Error en centro_costo_logic.php: " . $e->getMessage());
