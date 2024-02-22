@@ -57,6 +57,6 @@ function mostrarFormularioBusqueda() {
             <input type='text' name='legajo' placeholder='Ingrese un legajo'>
             <input type='submit' value='Buscar'>
           </form>";
-    echo "<br><br>A continuación se expondrá";
+    echo "<br><br>";
 }
 ?>
