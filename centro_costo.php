@@ -28,16 +28,17 @@ function obtenerDatosCentroCosto($conexion, $fecha_inicio, $fecha_fin) {
     }
 
     $stmt->close();
-    return [$datosGrafico, $totalHoras, $resultado];
+    return [$datosGrafico, $totalHoras, $resultado,$sql];
 }
 
 try {
-    list($datosGrafico, $totalHoras, $resultado) = obtenerDatosCentroCosto($conexion, $fecha_inicio, $fecha_fin);
+    list($datosGrafico, $totalHoras, $resultado, $sql) = obtenerDatosCentroCosto($conexion, $fecha_inicio, $fecha_fin);
     $datosJson = json_encode($datosGrafico);
 } catch (Exception $e) {
     error_log("Error en centro_costo_logic.php: " . $e->getMessage());
     // Manejo del error
 }
+
 
 $conexion->close();
 include 'includes/centro_costo_chart.php';
@@ -46,6 +47,7 @@ include 'includes/centro_costo_table.php';
 
 
 
-echo "<br><br><br> Datos desde $fecha_inicio hasta $fecha_fin <br>";
+echo '<br><br><br> Datos desde "'.$fecha_inicio.'" hasta "'.$fecha_fin.'" <br>';
+echo "SQL = <br>" . htmlspecialchars($sql);
 
 ?>
