@@ -1,10 +1,16 @@
 <!--centro_costo.php-->
 <br><br>
+<?php
+$fecha_inicio_default = date("Y-m-d"); // Hoy
+$fecha_fin_default = date("Y-m-d", strtotime("+19 days")); // Hoy + 19 días
+?>
+
 <form method="GET" action="centro_costo.php">
-    Fecha inicio: <input type="date" name="fecha_inicio" value="2023-11-01">
-    Fecha fin: <input type="date" name="fecha_fin" value="2023-11-20">
+    Fecha inicio: <input type="date" name="fecha_inicio" value="<?php echo $fecha_inicio_default; ?>">
+    Fecha fin: <input type="date" name="fecha_fin" value="<?php echo $fecha_fin_default; ?>">
     <input type="submit" value="Filtrar">
 </form>
+
 
 <?php
 include 'templates/header.php'; 
