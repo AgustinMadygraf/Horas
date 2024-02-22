@@ -1,24 +1,23 @@
 <!--centro_costo.php-->
 <br><br>
 <?php
-$fecha_inicio_default = date("Y-m-d"); // Hoy
-$fecha_fin_default = date("Y-m-d", strtotime("+19 days")); // Hoy + 19 días
+$fecha_inicio = isset($_GET['fecha_inicio']) && !empty($_GET['fecha_inicio']) ? $_GET['fecha_inicio'] : '2023-11-01';
+$fecha_fin = isset($_GET['fecha_fin']) && !empty($_GET['fecha_fin']) ? $_GET['fecha_fin'] : '2023-11-20';
+$fecha_inicio_formato = date("d/m/Y", strtotime($fecha_inicio));
+$fecha_fin_formato = date("d/m/Y", strtotime($fecha_fin));
 ?>
-
 <form method="GET" action="centro_costo.php">
-    Fecha inicio: <input type="date" name="fecha_inicio" value="<?php echo $fecha_inicio_default; ?>">
-    Fecha fin: <input type="date" name="fecha_fin" value="<?php echo $fecha_fin_default; ?>">
+    Fecha inicio: <input type="date" name="fecha_inicio" value="<?php echo $fecha_inicio; ?>">
+    Fecha fin: <input type="date" name="fecha_fin" value="<?php echo $fecha_fin; ?>">
     <input type="submit" value="Filtrar">
 </form>
-
 
 <?php
 include 'templates/header.php'; 
 require_once 'includes/db.php';
 require_once 'includes/helpers.php';
 
-$fecha_inicio = isset($_GET['fecha_inicio']) && !empty($_GET['fecha_inicio']) ? $_GET['fecha_inicio'] : '2023-11-01';
-$fecha_fin = isset($_GET['fecha_fin']) && !empty($_GET['fecha_fin']) ? $_GET['fecha_fin'] : '2023-11-20';
+
 
 function obtenerDatosCentroCosto($conexion, $fecha_inicio, $fecha_fin) {
     
