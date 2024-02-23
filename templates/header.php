@@ -10,7 +10,7 @@ echo "<header> <br><br><br>    <div class='topnav'> <ul>";
 echo "<li><a href='index.php' >Inicio</a></li>";
 echo "<li><a href='insertar_centro.php?legajo=".$legajo."'>Insertar</a></li>";
 echo "<li><a href='mostrar_horas.php?legajo=".$legajo."'>Visualizar</a></li>";
-echo "<li><a href='actualizar_centro.php?legajo=".$legajo."'>Actualizar</a></li>";
+echo "<li><a href='modificar_centro.php?legajo=".$legajo."'>Modificar</a></li>";
 echo "<li><a href='centro_costo.php'>Centro de Costos</a></li>";
 echo "<li><a href='/horas/index.php' ".($paginaActual == '/horas/index.php' ? $claseActiva : "").">Horas</a></li>";
 echo "<li><a href='/DigiRail/index.php' ".($paginaActual == '/DigiRail/index.php' ? $claseActiva : "").">DigiRail</a></li>";
