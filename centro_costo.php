@@ -21,7 +21,7 @@
     </table>
 </form>
 <?php
-echo "Cantidad de días seleccionados: " . $intervalo_dias . "<br>";
+echo "Cantidad de días seleccionados: " . $intervalo_dias ;
 include 'templates/header.php'; 
 require_once 'includes/db.php';
 require_once 'includes/helpers.php';
@@ -37,8 +37,5 @@ try {
 $conexion->close();
 include 'includes/centro_costo_chart.php';
 include 'includes/centro_costo_table.php';
-
-$fecha_inicio_formato = date("d/m/Y", strtotime($fecha_inicio));
-$fecha_fin_formato = date("d/m/Y", strtotime($fecha_fin));
 
 ?>
