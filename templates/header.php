@@ -13,7 +13,7 @@ echo "<li><a href='mostrar_horas.php?legajo=".$legajo."'>Visualizar</a></li>";
 echo "<li><a href='modificar_centro.php?legajo=".$legajo."'>Modificar</a></li>";
 echo "<li><a href='centro_costo.php'>Centro de Costos</a></li>";
 echo "<li><a href='/horas/index.php' ".($paginaActual == '/horas/index.php' ? $claseActiva : "").">Horas</a></li>";
-echo "<li><a href='/DigiRail/index.php' ".($paginaActual == '/DigiRail/index.php' ? $claseActiva : "").">DigiRail</a></li>";
+echo "<li><a href='/DataMaq/index.php' ".($paginaActual == '/DataMaq/index.php' ? $claseActiva : "").">DataMaq</a></li>";
 echo "<li><a href='/Bolsas/index.php' ".($paginaActual == '/Bolsas/index.php' ? $claseActiva : "").">Costos Bolsas</a></li>";
 echo "<li><a href='/phpMyAdmin/' target='_blank'>PHP MyAdmin</a></li>";
 echo "</ul></div></header>"
